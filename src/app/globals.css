@@ -1,0 +1,189 @@
+@import "tailwindcss";
+
+:root {
+  --background: #dddddd;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #dddddd;
+    --foreground: #ededed;
+  }
+}
+html{
+  scroll-behavior: smooth;
+}
+body {
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+    /* height: 3000px; */
+}
+
+/* style for hero section */
+.hero-section .hero-container {
+  /* width: 90%; */
+  width:290px;
+  margin: auto;
+  background-image: url("../../public/assets/hero-overlay.png");
+  height: 900px;
+  background-position: center;
+  background-size: cover;
+  border-radius: 65px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+/* loading progress bar  on fullpage  */
+.loader {
+  display: block;
+  position: relative;
+  top: 46px;
+  left: 103px;
+  height: 21px;
+  width: 41.5%;
+  overflow: hidden;
+}
+.loader:after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background: #dcc080;
+  animation: 4s prog ease-in infinite;
+}
+@keyframes prog {
+  to {
+    width: 0%;
+  }
+}
+/* loading text Loading on fullpage */
+.loader2 {
+  color: #fbb502;
+  display: inline-block;
+  position: relative;
+  font-family: Arial, Helvetica, sans-serif;
+  box-sizing: border-box;
+}
+.loader2::after {
+  content: "";
+  width: 5px;
+  height: 5px;
+  background: red;
+  position: absolute;
+  bottom: 10px;
+  right: -5px;
+  box-sizing: border-box;
+  animation: animloader 0.8s linear infinite;
+}
+@keyframes animloader {
+  0% {
+    box-shadow: 10px 0 rgba(255, 255, 255, 0), 20px 0 rgba(255, 255, 255, 0);
+  }
+  50% {
+    box-shadow: 10px 0 orangered, 20px 0 orangered;
+  }
+  100% {
+    box-shadow: 10px 0 orangered, 20px 0 orangered;
+  }
+}
+
+/* style section for TrackProgressSection button   */
+.btn2{
+top: 81px !important;
+left: 215px !important;
+}
+.btn3{
+top: 67px !important;
+left: 225px !important;
+}
+.btn4{
+top: 50px !important;
+left: 235px !important;
+}
+.right-box {
+  display: flex;
+  flex-direction: column;
+  color: orange;
+  margin-left: 10px;
+  font-family: 'PT Sans Narrow';
+}
+.right-box-top {
+  font-size: 18px;
+  font-weight: bold;
+}
+.right-box-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.right-box-bottom h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.date {
+  font-size: 14px;
+  color: white;
+}
+
+/*about page style*/
+.about-page .about-overlay-img {
+  margin: auto;
+background-image: url("/assets/hero-overlay.png");
+  background-position: right;
+  background-size: cover;
+  transform:rotate(180deg)
+ 
+}
+.about-img-doctor{
+    height: 580px;
+    width: 360px;
+    z-index: 20
+}
+
+
+/* media query */
+
+
+@media screen and (max-width: 420px) {
+  .before-imgs{
+    padding-inline:0 !important;
+  }
+  .img-before {
+   width:120px !important;
+  }
+
+  .img-after {
+   width:120px !important;
+  }
+}
+
+@media screen and (max-width: 350) {
+  .before-imgs{
+    padding-inline:0 !important;
+  }
+  .img-before {
+   width:100px !important;
+  }
+
+  .img-after {
+   width:100px !important;
+  }
+}
+
+
+
+
+
+
+
