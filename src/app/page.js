@@ -13,35 +13,25 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-          console.log(document.readyState );
-
-    // prvent scrolling during load page
+    // Prevent scrolling during load
     document.body.classList.add("overflow-hidden");
 
     const handleLoad = () => {
-            console.log(document.readyState );
-
       setIsLoading(false);
       document.body.classList.remove("overflow-hidden");
     };
 
-    // check if the page is already loaded
+    // Check if content is already loaded
     if (document.readyState === 'complete') {
-      console.log(document.readyState );
-      
-      handleLoad();
+      const timer = setTimeout(handleLoad, 300);
+      return () => clearTimeout(timer);
     } else {
       window.addEventListener('load', handleLoad);
     }
-
-    // Cclean up when user leave this component for performance
-    return () => {
-      window.removeEventListener('load', handleLoad);
-      document.body.classList.remove("overflow-hidden");
-    };
+    return () => window.removeEventListener('load', handleLoad);
   }, []);
 
-  if (isLoading) {
+ if (isLoading) {
     return (
       <div className="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center">
         <div className="image-loader w-[300px]  relative  h-[110px] ">
@@ -61,13 +51,15 @@ export default function Page() {
   }
 
   return (
-    <div className="animate-fadeIn">
-      <Hero />
-      <Book />
-      <TrackBookSection />
-      <NotifiedSection />
-      <PointsSection />
-      <LatestNewsSection />
-    </div>
+    <>
+      <div className="animate-fadeIn">
+        <Hero />
+        <Book />
+        <TrackBookSection />
+        <NotifiedSection />
+        <PointsSection />
+        <LatestNewsSection />
+      </div>
+    </>
   );
 }

@@ -1,236 +1,315 @@
-"use client";
-
-import { useState } from "react";
-import React from "react";
+"use client"
+import { useState, useEffect } from "react";
+import { IoIosArrowDown } from "react-icons/io";
+import { FaFacebookF, FaInstagram, FaTwitter, FaPlay } from "react-icons/fa";
+import BlurImg1 from "@/public/assets/blur-ball-hero1.png";
 import Image from "next/image";
-import ProcedureImg1 from "@/public/assets/news/new1.png";
-import ProcedureImg2 from "@/public/assets/news/new2.png";
-import ProcedureImg3 from "@/public/assets/news/new3.png";
-import ProcedureImg4 from "@/public/assets/news/new4.png";
+import BallImg1 from "@/public/assets/ball1-hero.png";
 import ProcedureImg5 from "@/public/assets/news/new5.png";
 import OverLayImg from "@/public/assets/news/news-overlay.svg";
-
-import BlurImg1 from "@/public/assets/blur-ball-hero1.png";
-import BallImg1 from "@/public/assets/ball1-hero.png";
-
 import FaceBookIcon from "@/public/assets/news/facebook.svg";
 import InstaIcon from "@/public/assets/news/insta.svg";
 import TwitterIcon from "@/public/assets/news/twitter.svg";
 
-import { IoIosArrowDown } from "react-icons/io";
+// Skeleton Component for News Item
+const NewsItemSkeleton = () => (
+  <div className="bg-white rounded-3xl shadow-lg overflow-hidden animate-pulse">
+    {/* Image Skeleton */}
+    <div className="relative h-64 md:h-80 bg-gray-300">
+      {/* Author info skeleton */}
+      <div className="absolute left-[2%] top-[10px] z-[50]">
+        <div className="h-5 bg-gray-400 rounded w-32 mb-2"></div>
+        <div className="h-4 bg-gray-400 rounded w-24"></div>
+      </div>
+    </div>
 
-export default function OurApp() {
+    {/* Content Skeleton */}
+    <div className="p-8">
+      <div className="flex justify-between items-center">
+        <div className="flex-1 pr-4">
+          <div className="h-8 bg-gray-300 rounded w-3/4 mb-2"></div>
+          <div className="h-8 bg-gray-300 rounded w-1/2"></div>
+        </div>
+        <div className="w-8 h-8 bg-gray-300 rounded"></div>
+      </div>
+    </div>
+  </div>
+);
+
+export default function NewsDisplay() {
   const [openIndex, setOpenIndex] = useState(null);
+  const [newsData, setNewsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const toggle = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  const faqsData = [
-    {
-      image: ProcedureImg1,
-      question: "Dr. Samkari showcases his latest cosmetic techniques.",
-      answer:
-        "Dr. Samkari showcases his latest cosmetic techniques, marking a new era in aesthetic medicine where science meets artistry. " +
-        "Renowned for his meticulous attention to detail and commitment to natural-looking results, Dr. Samkari continuously explores and develops advanced procedures. ",
-      answerSpan:
-        "His latest techniques incorporate state-of-the-art technologies and innovative, minimally invasive methods designed to rejuvenate the face and body with reduced downtime and greater precision.",
-    },
-    {
-      image: ProcedureImg2,
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('http://127.0.0.1:8000/api/news');
 
-      question: "Dr. Samkari attends top cosmetic conferences in Milan.",
-      answer:
-        "Dr. Samkari showcases his latest cosmetic techniques, marking a new era in aesthetic medicine where science meets artistry. " +
-        "Renowned for his meticulous attention to detail and commitment to natural-looking results, Dr. Samkari continuously explores and develops advanced procedures. " +
-        "His latest techniques incorporate state-of-the-art technologies and innovative, minimally invasive methods designed to rejuvenate the face and body with reduced downtime and greater precision.",
-      answerSpan:
-        "His latest techniques incorporate state-of-the-art technologies and innovative, minimally invasive methods designed to rejuvenate the face and body with reduced downtime and greater precision.",
-    },
-    {
-      image: ProcedureImg3,
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-      question: "Dr. Samkari attends top cosmetic conferences in Milan.",
-      answer:
-        "Dr. Samkari showcases his latest cosmetic techniques, marking a new era in aesthetic medicine where science meets artistry. " +
-        "Renowned for his meticulous attention to detail and commitment to natural-looking results, Dr. Samkari continuously explores and develops advanced procedures. ",
-      answerSpan:
-        "His latest techniques incorporate state-of-the-art technologies and innovative, minimally invasive methods designed to rejuvenate the face and body with reduced downtime and greater precision.",
-    },
-    {
-      image: ProcedureImg4,
+        const data = await response.json();
+        console.log('News data:', data);
 
-      question: "Dr. Samkari showcases his latest cosmetic techniques.",
-      answer:
-        "Dr. Samkari showcases his latest cosmetic techniques, marking a new era in aesthetic medicine where science meets artistry. " +
-        "Renowned for his meticulous attention to detail and commitment to natural-looking results, Dr. Samkari continuously explores and develops advanced procedures. ",
-      answerSpan:
-        "His latest techniques incorporate state-of-the-art technologies and innovative, minimally invasive methods designed to rejuvenate the face and body with reduced downtime and greater precision.",
-    },
-    {
-      image: ProcedureImg5,
-    },
-  ];
+        // Assuming the API returns data in format: { data: [...] }
+        setNewsData(data.data || data);
+        setError(null);
+      } catch (err) {
+        console.log('Error fetching news:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNews();
+  }, []);
+
+  if (error && newsData.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 text-lg mb-4">Error loading news: {error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="updates-page overflow-hidden px-5">
-      <div className="container mx-auto text-[30px] text-center">
-        <div className="content md:w-[90%]  lg:w-[75%]  mx-auto pt-[200px]">
-          <div className="box-procedure">
-            <div className="box-text ">
-              {faqsData.map((faq, index) => (
-                <div key={index} className="  mb-[50px]">
-                  <div
-                    className={`box-img bg-white relative rounded-t-[35px] ${
-                      index == 4 ? "rounded-[35px]" : ""
-                    }  `}
-                  >
-                    {index == 0 && (
-                      <div className="balls">
-                        <div className="absolute  left-[-33%] bottom-[-0px] z-[40]">
-                          <Image
-                            src={BlurImg1}
-                            alt="Blurred Ball"
-                            className="filter blur-sm opacity-[0.5]"
-                            width={250}
-                            height={0}
-                            priority
-                          />
-                        </div>
-                        <div className="absolute  right-[-20%] top-[-60px] z-[40]">
-                          <Image
-                            src={BlurImg1}
-                            alt="Blurred Ball"
-                            className="filter blur-[3px]"
-                            width={80}
-                            height={0}
-                            priority
-                          />
-                        </div>
-                           <div className="absolute flex flex-col text-white left-[2%] top-[10px] z-[50]">
-                          <span className="text-[#f7e8e8] text-[20px] text-left">Dr.Zaid Samkari</span>
-                         <span className="text-[#f7e8e8] text-[15px] text-left">2 weeks ago</span>
-                        </div>
-                      </div>
-                    )}
+    <div className="min-h-screen py-2 px-4">
+      <div className="container mx-auto text-[30px]">
 
-                    {index == 2 && (
-                      <div className="balls">
-                        <div className="absolute  right-[-40%] bottom-[-10px] z-[40]">
-                          <Image
-                            src={BlurImg1}
-                            alt="Blurred Ball"
-                            className="filter w-[250px] sm:w-[270px] blur-[3px]"
-                            width={30}
-                            height={0}
-                            priority
-                          />
-                        </div>
-                      </div>
-                    )}
-                    {index == 3 && (
-                      <div className="balls">
-                        <div className="absolute  left-[-22%] bottom-[-20%] z-[40]">
-                          <Image
-                            src={BlurImg1}
-                            alt="Blurred Ball"
-                            className="filter blur-[8px]"
-                            width={120}
-                            height={0}
-                            priority
-                          />
-                        </div>
-                      </div>
-                    )}
-
+        {/* News Items */}
+        <div className="content pb-[75px] md:w-[90%] lg:w-[75%] mx-auto pt-[200px]">
+          {loading ? (
+            Array.from({ length: 3 }).map((_, index) => (
+              <div key={`skeleton-${index}`} className="relative mb-8">
+                {/* Decorative elements for first and last skeleton items */}
+                {index === 0 && (
+                  <div className="absolute left-[-33%] bottom-[-0px] z-[40]">
                     <Image
-                      src={faq.image}
-                      width={0}
+                      src={BlurImg1}
+                      alt="Blurred Ball"
+                      className="filter blur-sm opacity-[0.5]"
+                      width={250}
                       height={0}
-                      className=" w-full !h-[250px] md:!h-[250px] lg:!h-[300px] rounded-[35px]  "
-                      alt="new1"
+                      priority
                     />
-                    {index == 4 && (
-                      <div className="balls">
-                        <div className="absolute w-[105%] h-[100%]  overflow-hidden  left-[-2%] bottom-[0px] z-[40]">
-                          <Image
-                            src={OverLayImg}
-                            alt="Blurred Ball"
-                            className="filter blur-[8px] w-full mt-[-30px]"
-                            width={200}
-                            height={0}
-                            priority
-                          />
-                        </div>
-                        <div className="absolute flex flex-col text-white left-[2%] top-[10px] z-[50]">
-                          <span className="text-[#f7e8e8] text-[25px] text-left">Dr.Zaid Samkari</span>
-                         <span className="text-[#f7e8e8] text-[17px] text-left">2 weeks ago</span>
-                        </div>
-                      </div>
-                    )}
                   </div>
+                )}
+                {index === 2 && (
+                  <div className="absolute left-[-33%] bottom-[-0px] z-[40]">
+                    <Image
+                      src={BlurImg1}
+                      alt="Blurred Ball"
+                      className="filter blur-sm opacity-[0.5]"
+                      width={250}
+                      height={0}
+                      priority
+                    />
+                  </div>
+                )}
+                <NewsItemSkeleton />
+              </div>
+            ))
+          ) : (
+            newsData.map((item, index) => (
+              <div key={item.id} className="relative mb-8">
+                {/* Decorative elements for first and last items */}
 
-                  <div className={` qusetion-bottom ${index == 4 ? "hidden" : ""}`}
-                  >
-                    <button
-                      onClick={() => toggle(index)}
-                      className={`bg-white cursor-pointer ${
-                        openIndex === index ? "" : " duration-0 rounded-b-2xl"
-                      }  w-full px-6 pt-4 pb-2 text-left flex justify-between items-center focus:outline-none`}
-                    >
-                      <span className="font-meduim text-[30px]">{faq.question}</span>
-                      <div className="arrow-icon">
-                        <IoIosArrowDown
-                          className={` cursor-pointer !font-extrabold text-[35px] transform transition-transform duration-300 ${
-                            openIndex === index ? "rotate-180" : ""
-                          }`}
+                {index === newsData.length - 1 && (
+                  <div className="absolute left-[-33%] bottom-[-0px] z-[40]">
+                    <Image
+                      src={BlurImg1}
+                      alt="Blurred Ball"
+                      className="filter blur-sm opacity-[0.5]"
+                      width={250}
+                      height={0}
+                      priority
+                    />
+                  </div>
+                )}
+
+                <div className="bg-white rounded-3xl shadow-lg overfldow-hidden hover:shadow-xl transition-shadow duration-300">
+                  {/* Image Section */}
+                  <div className="relative h-64 md:h-80 overfldow-hidden">
+                    {index === 0 && (
+                      <div className="absolute left-[-33%] bottom-[-0px] z-[40]">
+                        <Image
+                          src={BlurImg1}
+                          alt="Blurred Ball"
+                          className="filter blur-sm opacity-[0.5]"
+                          width={250}
+                          height={0}
+                          priority
                         />
                       </div>
-                    </button>
-                    <div
-                      className={`px-6  bg-white rounded-b-2xl text-gray-800 transition-all duration-300 overflow-hidden ${
-                        openIndex === index ? "max-h-[450px] py-0" : "max-h-0"
-                      }`}
-                    >
-                      <p className="text-xl text-left  ">{faq.answer}</p>
-                      <p className="text-xl text-left pt-5 pb-5">
-                        {faq.answerSpan}
-                      </p>
+                    )}
+                    {index === 0 && (
+                      <div className="absolute right-[-18%] top-[-60px] z-[40]">
+                        <Image
+                          src={BlurImg1}
+                          alt="Blurred Ball"
+                          className=" filter blur-[2px] opacity-[0.9]"
+                          width={80}
+                          height={0}
+                          priority
+                        />
+                      </div>
+                    )}
+                    {index === 2 && (
+                      <div className="absolute right-[-40%] top-[55px] z-[40]">
+                        <Image
+                          src={BlurImg1}
+                          alt="Blurred Ball"
+                          className=" filter blur-[2px] opacity-[0.9]"
+                          width={250}
+                          height={0}
+                          priority
+                        />
+                      </div>
+                    )}
+
+
+
+
+                    <img
+                      src={"http://127.0.0.1:8000/assets/images/news/" + item.image}
+                      alt={item.title}
+                      className="w-full h-full object-cover rounded-t-[25px]"
+                    />
+
+                    <div className="absolute flex flex-col text-white left-[2%] top-[10px] z-[50]">
+                      <span className="text-[#f7e8e8] text-[20px] text-left">Dr.Zaid Samkari</span>
+                      <span className="text-[#f7e8e8] text-[15px] text-left">{item.date || item.created_at || "Recently"}</span>
                     </div>
                   </div>
 
+                  {/* Content Section */}
+                  {(item.content || item.description) && (
+                    <div className="p-0">
+                      <button
+                        onClick={() => toggle(index)}
+                        className={`w-full px-8 py-6 text-left flex justify-between items-center hover:bg-gray-50 transition-colors ${openIndex === index ? '' : 'rounded-b-3xl'
+                          }`}
+                      >
+                        <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 pr-4">
+                          {item.title}
+                        </h2>
+                        <IoIosArrowDown
+                          className={`w-8 h-8 text-gray-600 transition-transform duration-300 flex-shrink-0 ${openIndex === index ? 'rotate-180' : ''
+                            }`}
+                        />
+                      </button>
+
+                      <div
+                        className={`px-8 bg-white transition-all duration-300 overflow-hidden ${openIndex === index ? 'max-h-96 pb-8 rounded-b-3xl ' : 'max-h-0 '
+                          }`}
+                      >
+                        <div className="border-t border-gray-100 pt-6">
+                          <p className="text-lg text-gray-700 leading-relaxed mb-4">
+                            {item.content || item.description}
+                          </p>
+                          {item.additionalContent && (
+                            <p className="text-lg text-gray-700 leading-relaxed">
+                              {item.additionalContent}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              ))}
-              <div className="social flex justify-center gap-13 pt-[20px]">
-                <Image
-                  src={FaceBookIcon}
-                  alt="Blurred Ball"
-                  className="filter cursor-pointer "
-                  width={30}
-                  height={0}
-                  priority
-                />
-                <Image
-                  src={InstaIcon}
-                  alt="Blurred Ball"
-                  className="filter cursor-pointer "
-                  width={50}
-                  height={0}
-                  priority
-                />
-                <Image
-                  src={TwitterIcon}
-                  alt="Blurred Ball"
-                  className="filter cursor-pointer "
-                  width={50}
-                  height={0}
-                  priority
-                />
               </div>
+            ))
+          )}
+
+          <div className="relative w-full h-full">
+            <div className="absolute w-[105%] h-[100%]  overflow-hidden  left-[-2%] bottom-[0px] z-[40]">
+              <Image
+                src={OverLayImg}
+                alt="Blurred Ball"
+                className="filter blur-[8px] w-full mt-[-30px]"
+                width={200}
+                height={0}
+                priority
+              />
             </div>
+            <div className="z-[40]">
+              <Image
+                src={ProcedureImg5}
+                alt="Blurred Ball"
+                className="w-full"
+                width={250}
+                height={0}
+                priority
+              />
+            </div>
+            <div className="absolute flex flex-col text-white left-[2%] top-[10px] z-[50]">
+              <span className="text-[#f7e8e8] text-[25px] text-left">Dr.Zaid Samkari</span>
+              <span className="text-[#f7e8e8] text-[17px] text-left">2 weeks ago</span>
+            </div>
+            <div className="social absolute w-full flex justify-center gap-13 pt-[20px]">
+              <Image
+                src={FaceBookIcon}
+                alt="Blurred Ball"
+                className="filter cursor-pointer "
+                width={30}
+                height={0}
+                priority
+              />
+              <Image
+                src={InstaIcon}
+                alt="Blurred Ball"
+                className="filter cursor-pointer "
+                width={50}
+                height={0}
+                priority
+              />
+              <Image
+                src={TwitterIcon}
+                alt="Blurred Ball"
+                className="filter cursor-pointer "
+                width={50}
+                height={0}
+                priority
+              />
+            </div>
+
           </div>
+
+
         </div>
-        <div className="balls relative h-12 container w-[90%]">
-          <div className="absolute  right-[-15%] bottom-[-2%] z-[40]">
+
+
+
+        <div className="footer-news relative text-center pt-20 text-gray-600">
+          <span>
+            Unlock a ready-made, fully functional app designed by a top plastic
+            surgeon to simplify clinic management, enhance patient experience, and
+            boost retention. From smart bookings to loyalty rewards, this code is
+            plug-and-play — built with real clinic needs in mind. Invest once, and
+            turn complexity into clarity for any aesthetic business. Scalable.
+            Elegant. Proven.
+
+
+          </span>
+
+          <div className="absolute right-[-4%] bottom-[90%] z-[40]">
             <Image
               src={BlurImg1}
               alt="Blurred Ball"
@@ -240,16 +319,13 @@ export default function OurApp() {
               priority
             />
           </div>
+
         </div>
-        <div className="footer-news text-center pt-20 text-gray-600">
-          Unlock a ready-made, fully functional app designed by a top plastic
-          surgeon to simplify clinic management, enhance patient experience, and
-          boost retention. From smart bookings to loyalty rewards, this code is
-          plug-and-play — built with real clinic needs in mind. Invest once, and
-          turn complexity into clarity for any aesthetic business. Scalable.
-          Elegant. Proven.
-        </div>
+
       </div>
+
+
+
     </div>
   );
 }
