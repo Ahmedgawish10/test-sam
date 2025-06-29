@@ -253,7 +253,7 @@ export default function NewsDisplay() {
               <Image
                 src={ProcedureImg5}
                 alt="Blurred Ball"
-                className="w-full"
+                className="w-full rounded-t-[35px]"
                 width={250}
                 height={0}
                 priority
@@ -294,7 +294,6 @@ export default function NewsDisplay() {
 
 
         </div>
-
 
 
         <div className="footer-news relative text-center pt-20 text-gray-600">
