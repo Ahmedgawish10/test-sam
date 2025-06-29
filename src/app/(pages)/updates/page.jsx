@@ -59,7 +59,6 @@ export default function NewsDisplay() {
         const data = await response.json();
         console.log('News data:', data);
 
-        // Assuming the API returns data in format: { data: [...] }
         setNewsData(data.data || data);
         setError(null);
       } catch (err) {
@@ -296,8 +295,8 @@ export default function NewsDisplay() {
         </div>
 
 
-        <div className="footer-news relative text-center pt-20 text-gray-600">
-          <span>
+        <div className="footer-news w-[90%] mx-auto relative text-center pt-20 text-gray-600">
+          <div className="text-[15px] ">
             Unlock a ready-made, fully functional app designed by a top plastic
             surgeon to simplify clinic management, enhance patient experience, and
             boost retention. From smart bookings to loyalty rewards, this code is
@@ -306,7 +305,7 @@ export default function NewsDisplay() {
             Elegant. Proven.
 
 
-          </span>
+          </div>
 
           <div className="absolute right-[-4%] bottom-[90%] z-[40]">
             <Image
