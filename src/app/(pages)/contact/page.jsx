@@ -7,8 +7,11 @@ import { LuEarth } from "react-icons/lu";
 import { IoIosPhonePortrait } from "react-icons/io";
 import { GrLocation, GrInstagram } from "react-icons/gr";
 import { motion, useInView, useAnimation } from "framer-motion";
-
+import useFetch from "@/src/hooks/useFetch";
 export default function ContactPage() {
+    const { data: locationData, loading, error } = useFetch("http://127.0.0.1:8000/api/location")
+  console.log(locationData);
+  
   const LocationData = [
     {
       numberClinic:1,
@@ -55,65 +58,78 @@ export default function ContactPage() {
   };
 
   // Func to display location section
-  const renderLocationClinic = (location, alignEnd = false) => (
-    <div className={` px-2 ${location.numberClinic == 2 ? " text-end md:text-start" : " text-end md:text-end" }   mb-2`}>
-      <h2 className={`text-2xl font-bold ${alignEnd ? "text-end" : ""} mb-2`}>
-        {location.title}
+ const renderLocationClinic = (location, alignEnd = false,index) => {
+  const mapLink = location.links.find(link => link.platform === 'maps')?.url || '#';
+  const instagramLinks = location.links.filter(link => link.platform === 'instagram');
+  console.log(instagramLinks);
+  
+  const telHref = location.phone;
+  const mailHref = location.email ? `mailto:${location.email}` : '#';
+  return (
+    <div className={`px-2 ${index == 1 ? "text-end md:text-start" : "text-end md:text-end"} mb-2`}>
+      {/* Title*/}
+      <h2 className={`text-2xl font-bold ${index==1 ? "text-start" : ""} mb-2`}>
+          {location.title}
       </h2>
-      {/* location on google map */}
-      {[location.address1, location.address2].map((address, i) => (
-        <p key={i} className="text-gray-700">
-          <a
-            href={location.mapLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:underline"
-          >
-            {address}
-          </a>
-        </p>
-      ))}
-      {/* phone */}
-      <p className="mb-2 text-gray-700">
-        <a href={location.tel} className="hover:underline">
-          {location.phone}
+      {/* Address En*/}
+      <p className="text-gray-700">
+        <a
+          href={mapLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:underline"
+        >
+          {location.addressEn}
         </a>
       </p>
-      {/* insta */}
-      {Array.isArray(location.instagram) ? (
-        <div className="text-gray-700  justify-end md:justify-start  flex flex-wrap gap-4 mb-2">
-          {location.instagram.map((insta, i) => (
+     {/* Address Ar*/}
+       <p className="text-gray-700">
+        <a
+          href={mapLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:underline"
+        >
+          {location.addressAr}
+        </a>
+      </p>
+      {/* Phone */}
+      {location.phone && (
+        <p className="mb-2 text-gray-700">
+          <a href={telHref} className="hover:underline">
+            {location.phone}
+          </a>
+        </p>
+      )}
+      {/* Instagram */}
+      {instagramLinks.length > 0 && (
+        <div className={`text-gray-700  justify-end ${index==1?"md:justify-start":""}  flex flex-wrap gap-4 mb-2`}>
+          {instagramLinks.map((link, i) => (
             <a
               key={i}
-              href={location.instaLinks[i]}
+              href={link.url}
               target="_blank"
               rel="noopener noreferrer"
               className="hover:underline"
             >
-              {insta}00
+              {link.platform}
             </a>
           ))}
         </div>
-      ) : (
-        <p className="mb-2 text-gray-700">
-          <a
-            href={location.instaLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:underline"
-          >
-            {location.instagram}
+      )}
+      {/* Email */}
+      {location.email && (
+        <p className="text-base text-gray-700">
+          <a href={mailHref} className="hover:underline">
+            {location.email}
           </a>
         </p>
       )}
-      {/* email */}
-      <p className="text-base text-gray-700">
-        <a href={location.mailto} className="hover:underline">
-          {location.email}
-        </a>
-      </p>
     </div>
   );
+};
+
+console.log(locationData?.data[0]);
 
   return (
     <main className="pt-[50px]">
@@ -168,10 +184,10 @@ export default function ContactPage() {
           }}
           className="px-6 py-10 text-gray-800"
         >
-          <div className="max-w-6xl mx-auto grid grid-cols-1 gap-5 md:gap-0 md:grid-cols-[1fr_50px_1fr] text-lg">
-            {renderLocationClinic(LocationData[0], true)}
+          <div className="max-w-6xl mx-auto grid grid-cols-1 gap-5 md:gap-0 md:grid-cols-[1fr_1fr] text-lg">
+            {/* {renderLocationClinic(LocationData[0], true)} */}
             {/* Icons */}
-            <div className="pt-[45px]  hidden md:flex flex-col items-center">
+            {/* <div className="pt-[45px]  hidden md:flex flex-col items-center">
               <p>
                 <GrLocation className="text-2xl" />
               </p>
@@ -184,18 +200,30 @@ export default function ContactPage() {
               <p className="pt-[12px]">
                 <AiOutlineMail className="text-2xl" />
               </p>
-            </div>
-            {renderLocationClinic(LocationData[1])}
+            </div> */}
+
+            {/* {renderLocationClinic(LocationData[1])} */}
+
+            {locationData?.data?.map((location,index)=>(
+              <div className="location" key={index}>
+                {renderLocationClinic(location, true,index)}
+              </div>
+
+            ))}
+
+
+
+
+
           </div>
 
-          <motion.div
+          <motion.div  className="about-footer max-w-xxl lg:px-15 pt-15 text-gray-700 text-center"
             initial="hidden"
             animate={controls}
             variants={{
               hidden: { opacity: 0, y: -100 },
               visible: { opacity: 1, y: 0, transition: { duration: 1, ease: "easeOut" } },
             }}
-            className="about-footer max-w-xxl lg:px-15 pt-15 text-gray-700 text-center"
           >
             Unlock a ready-made, fully functional app designed by a top plastic surgeon to simplify
             clinic management, enhance patient experience, and boost retention. From smart bookings to
@@ -203,6 +231,7 @@ export default function ContactPage() {
             Invest once, and turn complexity into clarity for any aesthetic business. Scalable. Elegant.
             Proven.
           </motion.div>
+
         </motion.div>
 
       </div>
