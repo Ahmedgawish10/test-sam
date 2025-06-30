@@ -59,9 +59,10 @@ export default function NewsDisplay() {
     );
   }
 
+// console.log(newsData);
 
   return (
-    <div className="min-h-screen py-2 px-4">
+    <div className="updates-page min-h-screen py-2 px-4">
       <div className="container mx-auto text-[30px]">
 
         {/* News Items data */}
@@ -173,7 +174,7 @@ export default function NewsDisplay() {
                     <div className="p-0">
                       <button
                         onClick={() => toggle(index)}
-                        className={`w-full px-8 py-6 text-left flex justify-between items-center hover:bg-gray-50 transition-colors ${openIndex === index ? '' : 'rounded-b-3xl'
+                        className={`news-title cursor-pointer w-full px-8 py-6 text-left flex justify-between items-center hover:bg-gray-50 transition-colors ${openIndex === index ? '' : 'rounded-b-3xl'
                           }`}
                       >
                         <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 pr-4">
@@ -185,13 +186,12 @@ export default function NewsDisplay() {
                         />
                       </button>
 
-                      <div
-                        className={`px-8 bg-white transition-all duration-300 overflow-hidden ${openIndex === index ? 'max-h-96 pb-8 rounded-b-3xl ' : 'max-h-0 '
+                      <div className={`news-content px-8 bg-white transition-all duration-300 overflow-hidden ${openIndex === index ? 'max-h-96 pb-8 rounded-b-3xl ' : 'max-h-0 '
                           }`}
                       >
                         <div className="border-t border-gray-100 pt-6">
                           <p className="text-lg text-gray-700 leading-relaxed mb-4">
-                            {item.content || item.description}
+                            {item.content}
                           </p>
                           {item.additionalContent && (
                             <p className="text-lg text-gray-700 leading-relaxed">
