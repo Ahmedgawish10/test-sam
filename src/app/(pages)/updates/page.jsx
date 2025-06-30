@@ -1,7 +1,6 @@
 "use client"
 import { useState, useEffect } from "react";
 import { IoIosArrowDown } from "react-icons/io";
-import { FaFacebookF, FaInstagram, FaTwitter, FaPlay } from "react-icons/fa";
 import BlurImg1 from "@/public/assets/blur-ball-hero1.png";
 import Image from "next/image";
 import BallImg1 from "@/public/assets/ball1-hero.png";
@@ -10,7 +9,7 @@ import OverLayImg from "@/public/assets/news/news-overlay.svg";
 import FaceBookIcon from "@/public/assets/news/facebook.svg";
 import InstaIcon from "@/public/assets/news/insta.svg";
 import TwitterIcon from "@/public/assets/news/twitter.svg";
-
+import useFetch from "@/src/hooks/useFetch";
 // Skeleton Component for News Item
 const NewsItemSkeleton = () => (
   <div className="bg-white rounded-3xl shadow-lg overflow-hidden animate-pulse">
@@ -38,41 +37,13 @@ const NewsItemSkeleton = () => (
 
 export default function NewsDisplay() {
   const [openIndex, setOpenIndex] = useState(null);
-  const [newsData, setNewsData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
+  const { data: newsData, loading, error } = useFetch("http://127.0.0.1:8000/api/news")
   const toggle = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  useEffect(() => {
-    const fetchNews = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('http://127.0.0.1:8000/api/news');
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('News data:', data);
-
-        setNewsData(data.data || data);
-        setError(null);
-      } catch (err) {
-        console.log('Error fetching news:', err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchNews();
-  }, []);
-
-  if (error && newsData.length === 0) {
+  if (error && newsData?.data?.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
         <div className="text-center">
@@ -88,11 +59,12 @@ export default function NewsDisplay() {
     );
   }
 
+
   return (
     <div className="min-h-screen py-2 px-4">
       <div className="container mx-auto text-[30px]">
 
-        {/* News Items */}
+        {/* News Items data */}
         <div className="content pb-[75px] md:w-[90%] lg:w-[75%] mx-auto pt-[200px]">
           {loading ? (
             Array.from({ length: 3 }).map((_, index) => (
@@ -126,10 +98,8 @@ export default function NewsDisplay() {
               </div>
             ))
           ) : (
-            newsData.map((item, index) => (
+            newsData?.data?.map((item, index) => (
               <div key={item.id} className="relative mb-8">
-                {/* Decorative elements for first and last items */}
-
                 {index === newsData.length - 1 && (
                   <div className="absolute left-[-33%] bottom-[-0px] z-[40]">
                     <Image
@@ -137,13 +107,14 @@ export default function NewsDisplay() {
                       alt="Blurred Ball"
                       className="filter blur-sm opacity-[0.5]"
                       width={250}
+                      // placeholder="blur"
                       height={0}
                       priority
                     />
                   </div>
                 )}
 
-                <div className="bg-white rounded-3xl shadow-lg overfldow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div className=" bg-white rounded-3xl shadow-lg overfldow-hidden hover:shadow-xl transition-shadow duration-300">
                   {/* Image Section */}
                   <div className="relative h-64 md:h-80 overfldow-hidden">
                     {index === 0 && (
@@ -183,17 +154,16 @@ export default function NewsDisplay() {
                       </div>
                     )}
 
-
-
-
-                    <img
-                      src={"http://127.0.0.1:8000/assets/images/news/" + item.image}
+                    <Image
+                      src={`http://127.0.0.1:8000/assets/images/news/${item.image}`}
                       alt={item.title}
+                      width={250}
+                      height={150}
                       className="w-full h-full object-cover rounded-t-[25px]"
                     />
 
                     <div className="absolute flex flex-col text-white left-[2%] top-[10px] z-[50]">
-                      <span className="text-[#f7e8e8] text-[20px] text-left">Dr.Zaid Samkari</span>
+                      <span className="text-[#f7e8e8] text-[20px] text-left">Dr.Zaid Samkari </span>
                       <span className="text-[#f7e8e8] text-[15px] text-left">{item.date || item.created_at || "Recently"}</span>
                     </div>
                   </div>
@@ -237,8 +207,8 @@ export default function NewsDisplay() {
             ))
           )}
 
-          <div className="relative w-full h-full">
-            <div className="absolute w-[105%] h-[100%]  overflow-hidden  left-[-2%] bottom-[0px] z-[40]">
+          <div className="last-box  relative w-full h-full">
+            <div className="overlay-img-last absolute w-[105%] h-[100%]  overflow-hidden  left-[-2%] bottom-[0px] z-[40]">
               <Image
                 src={OverLayImg}
                 alt="Blurred Ball"
@@ -248,7 +218,7 @@ export default function NewsDisplay() {
                 priority
               />
             </div>
-            <div className="z-[40]">
+            <div className="box-image-last z-[40]">
               <Image
                 src={ProcedureImg5}
                 alt="Blurred Ball"
@@ -258,7 +228,7 @@ export default function NewsDisplay() {
                 priority
               />
             </div>
-            <div className="absolute flex flex-col text-white left-[2%] top-[10px] z-[50]">
+            <div className="note-date absolute flex flex-col text-white left-[2%] top-[10px] z-[50]">
               <span className="text-[#f7e8e8] text-[25px] text-left">Dr.Zaid Samkari</span>
               <span className="text-[#f7e8e8] text-[17px] text-left">2 weeks ago</span>
             </div>
@@ -288,13 +258,12 @@ export default function NewsDisplay() {
                 priority
               />
             </div>
-
           </div>
 
 
         </div>
 
-
+         {/* footer */}
         <div className="footer-news w-[90%] mx-auto relative text-center pt-20 text-gray-600">
           <div className="text-[15px] ">
             Unlock a ready-made, fully functional app designed by a top plastic
@@ -319,7 +288,6 @@ export default function NewsDisplay() {
           </div>
 
         </div>
-
       </div>
 
 
